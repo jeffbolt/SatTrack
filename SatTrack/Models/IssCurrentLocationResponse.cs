@@ -4,7 +4,7 @@ using System;
 
 namespace SatTrack.Service.Models
 {
-	public class SatTrackResponse
+	public class IssCurrentLocationResponse
 	{
 		public string Message { get; set; }
 		public long Timestamp { get; set; }
@@ -12,6 +12,6 @@ namespace SatTrack.Service.Models
 		{
 			get { return UnixTimeHelper.FromUnixTime(Timestamp); }
 		}
-		public Position Iss_Position { get; set; }
+		public IssCurrentLocation Iss_Position { get; set; }
 	}
 }

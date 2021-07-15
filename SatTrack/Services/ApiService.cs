@@ -17,14 +17,26 @@ namespace SatTrack.Service.Services
 			_config = config;
 		}
 
-		public SatTrackResponse GetIssPosition()
+		public IssCurrentLocationResponse GetIssPosition()
 		{
-			var client = new RestClient(_config.OpenNotifyApiUri);
+			var client = new RestClient(_config.IssCurrentLocation);
 			client.UseNewtonsoftJson();
 			var response = client.Execute(new RestRequest());
 
 			if (response?.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response?.Content))
-				return JsonConvert.DeserializeObject<SatTrackResponse>(response.Content);
+				return JsonConvert.DeserializeObject<IssCurrentLocationResponse>(response.Content);
+			else
+				return null;
+		}
+
+		public PeopleInSpaceResponse GetPeopleInSpace()
+		{
+			var client = new RestClient(_config.PeopleInSpace);
+			client.UseNewtonsoftJson();
+			var response = client.Execute(new RestRequest());
+
+			if (response?.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrEmpty(response?.Content))
+				return JsonConvert.DeserializeObject<PeopleInSpaceResponse>(response.Content);
 			else
 				return null;
 		}

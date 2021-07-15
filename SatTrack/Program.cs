@@ -21,11 +21,15 @@ namespace SatTrack.Service
 	{
 		public static IConfiguration Configuration { get; } = new ConfigurationBuilder().Build();
 
-		public static async Task Main(string[] args)
+		public static async Task Main()
 		{
-			string url = Environment.GetEnvironmentVariable("OPEN_NOTIFY_API_URL");
-			if (!Uri.TryCreate(url, UriKind.Absolute, out Uri openNotifyApiUri))
-				throw new ArgumentException("Invalid OpenNotify API URL.");
+			string urlIssCurrentLocation = Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION");
+			if (!Uri.TryCreate(urlIssCurrentLocation, UriKind.Absolute, out Uri issCurrentLocation))
+				throw new ArgumentException("Invalid ISS_CURRENT_LOCATION.");
+
+			string urlPeopleInSpace = Environment.GetEnvironmentVariable("PEOPLE_IN_SPACE");
+			if (!Uri.TryCreate(urlPeopleInSpace, UriKind.Absolute, out Uri peopleInSpace))
+				throw new ArgumentException("Invalid PEOPLE_IN_SPACE.");
 
 			string refresh = Environment.GetEnvironmentVariable("REFRESH_RATE");
 			if (!double.TryParse(refresh, out double refreshRate))
@@ -38,7 +42,8 @@ namespace SatTrack.Service
 					services.AddScoped<ISatTrackConfig>(config =>
 						new SatTrackConfig
 						{
-							OpenNotifyApiUri = openNotifyApiUri,
+							IssCurrentLocation = issCurrentLocation,
+							PeopleInSpace = peopleInSpace,
 							RefreshRate = refreshRate
 						}
 					);
@@ -58,7 +63,7 @@ namespace SatTrack.Service
 
 		//private static IHostBuilder CreateHostBuilder(string[] args)
 		//{
-		//	string url = Environment.GetEnvironmentVariable("OPEN_NOTIFY_API_URL");
+		//	string url = Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION");
 		//	if (!Uri.TryCreate(url, UriKind.Absolute, out Uri openNotifyApiUri))
 		//		throw new ArgumentException("Invalid OpenNotify API URL.");
 
@@ -114,7 +119,7 @@ namespace SatTrack.Service
 
 			if (useJson)
 				config.WriteTo.Console(new ElasticsearchJsonFormatter());
-			else
+			else  // https://stackoverflow.com/questions/37463721 use :SSS or :fff?
 				config.WriteTo.Console(outputTemplate: "[{Timestamp:MM-dd-yyyy HH:mm:ss.fff} {Level:u3}] {Message:lj} {TransactionID}{NewLine}{Exception}", theme: SystemConsoleTheme.Literate);
 
 			if (level != LogLevel.None)
