@@ -5,6 +5,7 @@
       "environmentVariables": {
         "ISS_CURRENT_LOCATION": "http://api.open-notify.org/iss-now.json",
         "PEOPLE_IN_SPACE": "http://api.open-notify.org/astros.json",
+        "NORAD_STATIONS": "https://www.celestrak.com/NORAD/elements/stations.txt",
         "REFRESH_RATE": "5"
       }
     }
