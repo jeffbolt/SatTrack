@@ -1,4 +1,4 @@
-﻿namespace SatTrack.Data
+﻿namespace SatTrack.Data.Models
 {
 	public class Station
 	{

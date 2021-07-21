@@ -1,22 +1,16 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace SatTrack.Data
+namespace SatTrack.Data.Models
 {
 	// https://en.wikipedia.org/wiki/Two-line_element_set
 	public class TleFormat
 	{
-		//[MaxLength(69)]
-		//private string line1 { get; set; }
-		//[MaxLength(69)]
-		//private string line2 { get; set; }
 		public TleLine1 TleLine1 { get; }
 		public TleLine2 TleLine2 { get; }
 
 		public TleFormat(string line1, string line2)
 		{
-
 			TleLine1 = new TleLine1
 			{
 				LineNumber = ushort.Parse(line1.Substring(0, 1)),
@@ -52,45 +46,6 @@ namespace SatTrack.Data
 				Checksum = ushort.Parse(line2.Substring(68, 1).Trim())
 			};
 		}
-	}
-
-	public class TleLine1
-	{
-		public ushort LineNumber { get; set; }                  // Field: 1, Columns: 01–01
-		public ushort SatelliteCatalogNumber { get; set; }      // Field: 2, Columns: 03–07 https://en.wikipedia.org/wiki/Satellite_Catalog_Number
-		public char Classification { get; set; }                // Field: 3, Columns: 08–08 (U=Unclassified, C=Classified, S=Secret)
-		public InternationalDesignator CosparID { get; set; }
-		public ushort EpochYear { get; set; }                   // Field: 7, Columns: 19–20 (last two digits of year)
-		public double Epoch { get; set; }                       // Field: 8, Columns: 21–32 (day of the year and fractional portion of the day)
-		public double MeanMotionD1 { get; set; }                // Field: 9, Columns: 34–43 (First Derivative of Mean Motion aka the Ballistic Coefficient)
-		public double MeanMotionD2 { get; set; }                // Field: 10, Columns: 45–52 (Second Derivative of Mean Motion (decimal point assumed))
-		public double Bstar { get; set; }                       // Field: 11, Columns: 54–61 (Drag Term aka Radiation Pressure Coefficient or BSTAR (decimal point assumed))
-		public ushort EphemerisType { get; set; }               // Field: 12, Columns: 63–63 (internal use only - always zero in distributed TLE data)
-		public ushort ElementSetNumber { get; set; }            // Field: 13, Columns: 65–68 (Incremented when a new TLE is generated for this object)
-		public ushort Checksum { get; set; }                    // Field: 14, Columns: 69–69 (modulo 10)
-	}
-
-	public class TleLine2
-	{
-		public ushort LineNumber { get; set; }                  // Field: 1, Columns: 01–01
-		public ushort SatelliteCatalogNumber { get; set; }      // Field: 2, Columns: 03–07 https://en.wikipedia.org/wiki/Satellite_Catalog_Number
-		public double Inclination { get; set; }                 // Field: 3, Columns: 09–16 (degrees) https://en.wikipedia.org/wiki/Orbital_inclination
-		public double RightAscensionOfAscendingNode { get; set; } // Field: 4, Columns: 18–25 (degrees) https://en.wikipedia.org/wiki/Right_ascension_of_the_ascending_node
-		public double Eccentricity { get; set; }                // Field: 5, Columns: 27–33 (decimal point assumed) https://en.wikipedia.org/wiki/Orbital_eccentricity
-		public double ArgumentOfPerigee { get; set; }           // Field: 6, Columns: 35–42 (degrees) https://en.wikipedia.org/wiki/Argument_of_perigee
-		public double MeanAnomaly { get; set; }                 // Field: 7, Columns: 44–51 (degrees) https://en.wikipedia.org/wiki/Mean_Anomaly
-		public double MeanMotion { get; set; }                  // Field: 7, Columns: 53–63 (revolutions per day) https://en.wikipedia.org/wiki/Mean_Motion
-		public ulong RevolutionNumberAtEpoch { get; set; }      // Field: 8, Columns: 64–68 (revolutions) 
-		public ushort Checksum { get; set; }                    // Field: 9, Columns: 69–69 (modulo 10)
-	}
-
-	public class InternationalDesignator
-	{
-		// aka COSPAR ID https://en.wikipedia.org/wiki/International_Designator
-		public ushort LaunchYear { get; set; }                  // Field: 4, Columns: 10–11	(last two digits of launch year)
-		public ushort LaunchNumber { get; set; }                // Field: 5, Columns: 12–14 (launch number of the year)
-		[MaxLength(3)]
-		public string LaunchPiece { get; set; }                 // Field: 6, Columns: 15–17 (piece of the launch)
 	}
 
 	//public class TleFormatter

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SatTrack.Data.Models;
+
+using System;
 
 namespace SatTrack.Data
 {
