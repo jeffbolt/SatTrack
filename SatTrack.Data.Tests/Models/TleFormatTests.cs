@@ -18,8 +18,8 @@ namespace SatTrack.Data.Tests.Models
 			{
 				TleLine1 = new TleLine1
 				{
-					Bstar = -11600000,
-					Checksum = 7,
+					LineNumber = 1,
+					SatelliteCatalogNumber = 25544,
 					Classification = 'U',
 					CosparID = new InternationalDesignator
 					{
@@ -27,33 +27,55 @@ namespace SatTrack.Data.Tests.Models
 						LaunchPiece = "A",
 						LaunchYear = 98
 					},
-					ElementSetNumber = 292,
-					EphemerisType = 0,
-					Epoch = 264.5178252,
 					EpochYear = 8,
-					LineNumber = 1,
+					Epoch = 264.5178252,
 					MeanMotionD1 = -2.182E-05,
 					MeanMotionD2 = 0,
-					SatelliteCatalogNumber = 25544
+					Bstar = -11600000,
+					EphemerisType = 0,
+					ElementSetNumber = 292,
+					Checksum = 7
 				},
 				TleLine2 = new TleLine2
 				{
-					ArgumentOfPerigee = 130.536,
-					Checksum = 7,
-					Eccentricity = 6703,
-					Inclination = 51.6416,
 					LineNumber = 2,
+					SatelliteCatalogNumber = 25544,
+					Inclination = 51.6416,
+					RightAscensionOfAscendingNode = 247.4627,
+					Eccentricity = 6703,
+					ArgumentOfPerigee = 130.536,
 					MeanAnomaly = 325.028,
 					MeanMotion = 15.72125391,
 					RevolutionNumberAtEpoch = 56353,
-					RightAscensionOfAscendingNode = 247.4627,
-					SatelliteCatalogNumber = 25544
+					Checksum = 7
 				}
 			};
 
 			var actual = new TleFormat(line1, line2);
-
 			actual.Should().BeEquivalentTo(expected);
+
+			long checksum1 = GetCheckSum(line1);
+			Assert.Equal(actual.TleLine1.Checksum, checksum1);
+			long checksum2 = GetCheckSum(line2);
+			Assert.Equal(actual.TleLine2.Checksum, checksum2);
+		}
+
+		private static long GetCheckSum(string line)
+		{
+			// The checksums for each line are calculated by adding all numerical digits on that line, including the line number.
+			// One is added to the checksum for each negative sign (-) on that line. All other non-digit characters are ignored.
+			var chars = line.Remove(line1.Length - 1, 1).Replace(" ", "").ToCharArray();
+			long sum = 0;
+
+			foreach (char ch in chars)
+			{
+				if (char.IsDigit(ch))
+					sum += long.Parse(ch.ToString());
+				else if (ch == '-')
+					sum += 1;
+			}
+
+			return sum % 10;
 		}
 	}
 }

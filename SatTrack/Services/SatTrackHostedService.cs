@@ -55,11 +55,11 @@ namespace SatTrack.Service.Services
 
 		private void PlotSatellites()
 		{
-			var response = _apiService.GetIssPosition();
-			if (response != null)
+			var location = _apiService.GetIssLocation();
+			if (location != null)
 			{
-				_logger.LogInformation($"GetIssPosition...\r\n\tMessage: {response.Message}\r\n\tTimestamp: {response.Timestamp}\r\n\tDateTime: {response.DateTime}\r\n\t" +
-					$"Latitude: {response.Iss_Position.Latitude}\r\n\tLongitude: {response.Iss_Position.Longitude}");
+				_logger.LogInformation($"GetIssPosition...\r\nCraft: {location.Craft}\r\n\tTimestamp: {location.Timestamp}\r\n\tDateTime: {location.DateTime}\r\n\t" +
+					$"Latitude: {location.Latitude}\r\n\tLongitude: {location.Longitude}");
 			}
 			else
 			{

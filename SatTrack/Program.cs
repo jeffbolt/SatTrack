@@ -48,7 +48,10 @@ namespace SatTrack.Service
 						}
 					);
 					services.AddScoped<ApiService>();
+
 					services.AddHostedService<SatTrackHostedService>();
+
+					//services.AddDbContext<ISatTrackDbContext, SatTrackDbContext>();
 
 					ConfigureLogging(services);
 				});
