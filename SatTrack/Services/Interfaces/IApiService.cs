@@ -1,10 +1,12 @@
 ﻿using SatTrack.Service.Models;
 
+using System.Threading.Tasks;
+
 namespace SatTrack.Service.Services.Interfaces
 {
 	public interface IApiService
 	{
-		SatelliteLocation GetIssLocation();
-		PeopleInSpaceResponse GetPeopleInSpace();
+		Task<SatelliteLocation> GetIssLocation();
+		Task<PeopleInSpaceResponse> GetPeopleInSpace();
 	}
 }

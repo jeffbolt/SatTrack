@@ -23,34 +23,34 @@ namespace SatTrack.Service
 
 		public static async Task Main()
 		{
-			string urlIssCurrentLocation = Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION");
-			if (!Uri.TryCreate(urlIssCurrentLocation, UriKind.Absolute, out Uri issCurrentLocation))
-				throw new ArgumentException("Invalid ISS_CURRENT_LOCATION.");
+			if (!Uri.TryCreate(Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION_URL"), UriKind.Absolute, out Uri issCurrentLocation))
+				throw new ArgumentException("Invalid ISS_CURRENT_LOCATION_URL.");
 
-			string urlPeopleInSpace = Environment.GetEnvironmentVariable("PEOPLE_IN_SPACE");
-			if (!Uri.TryCreate(urlPeopleInSpace, UriKind.Absolute, out Uri peopleInSpace))
-				throw new ArgumentException("Invalid PEOPLE_IN_SPACE.");
-
-			string refresh = Environment.GetEnvironmentVariable("REFRESH_RATE");
-			if (!double.TryParse(refresh, out double refreshRate))
+			if (!double.TryParse(Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION_POLL_RATE"), out double issPollRate))
 				throw new ArgumentException("Invalid refresh rate.");
+
+			if (!Uri.TryCreate(Environment.GetEnvironmentVariable("PEOPLE_IN_SPACE_URL"), UriKind.Absolute, out Uri peopleInSpace))
+				throw new ArgumentException("Invalid PEOPLE_IN_SPACE_URL.");
+
+			if (!Uri.TryCreate(Environment.GetEnvironmentVariable("NORAD_STATIONS_URL"), UriKind.Absolute, out Uri noradStations))
+				throw new ArgumentException("Invalid NORAD_STATIONS_URL.");
 
 			var builder = new HostBuilder()
 				.ConfigureServices((context, services) =>
 				{
 					services.AddScoped<IAssemblyService, AssemblyService>();
-					services.AddScoped<ISatTrackConfig>(config =>
-						new SatTrackConfig
+					services.AddScoped<ISatTrackConfig>(config => new SatTrackConfig
 						{
-							IssCurrentLocation = issCurrentLocation,
-							PeopleInSpace = peopleInSpace,
-							RefreshRate = refreshRate
+							IssCurrentLocationUri = issCurrentLocation,
+							IssCurrentLocationPollRate = issPollRate,
+							PeopleInSpaceUri = peopleInSpace,
+							NoradLocationsUri = noradStations
 						}
 					);
+					
 					services.AddScoped<ApiService>();
-
+					services.AddScoped<ISatTrackService, SatTrackService>();
 					services.AddHostedService<SatTrackHostedService>();
-
 					//services.AddDbContext<ISatTrackDbContext, SatTrackDbContext>();
 
 					ConfigureLogging(services);
@@ -66,11 +66,11 @@ namespace SatTrack.Service
 
 		//private static IHostBuilder CreateHostBuilder(string[] args)
 		//{
-		//	string url = Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION");
+		//	string url = Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION_URL");
 		//	if (!Uri.TryCreate(url, UriKind.Absolute, out Uri openNotifyApiUri))
 		//		throw new ArgumentException("Invalid OpenNotify API URL.");
 
-		//	string refresh = Environment.GetEnvironmentVariable("REFRESH_RATE");
+		//	string refresh = Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION_POLL_RATE");
 		//	if (!double.TryParse(refresh, out double refreshRate))
 		//		throw new ArgumentException("Invalid refresh rate.");
 

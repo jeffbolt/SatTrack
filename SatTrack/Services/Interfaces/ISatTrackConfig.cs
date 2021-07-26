@@ -4,8 +4,8 @@ namespace SatTrack.Service.Services.Interfaces
 {
 	public interface ISatTrackConfig
 	{
-		Uri IssCurrentLocation { get; set; }
-		Uri PeopleInSpace { get; set; }
-		double RefreshRate { get; set; }
+		Uri IssCurrentLocationUri { get; set; }
+		Uri PeopleInSpaceUri { get; set; }
+		double IssCurrentLocationPollRate { get; set; }
 	}
 }

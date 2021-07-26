@@ -13,14 +13,14 @@ namespace SatTrack.Service.Services
 	public class SatTrackHostedService : IHostedService, IDisposable
 	{
 		private Timer _timer;
-		private object _lockObject = new();
-		private readonly ApiService _apiService;
+		private readonly object _lockObject = new();
+		private readonly ISatTrackService _satTrackService;
 		private readonly ISatTrackConfig _config;
 		private readonly ILogger<SatTrackHostedService> _logger;
 
-		public SatTrackHostedService(ApiService apiService, ISatTrackConfig config, ILogger<SatTrackHostedService> logger)
+		public SatTrackHostedService(ISatTrackService satTrackService, ISatTrackConfig config, ILogger<SatTrackHostedService> logger)
 		{
-			_apiService = apiService;
+			_satTrackService = satTrackService;
 			_config = config;
 			_logger = logger;
 		}
@@ -31,10 +31,11 @@ namespace SatTrack.Service.Services
 			{
 				try
 				{
-					_timer = new Timer(e => RunTasks(), null, TimeSpan.Zero,
-						TimeSpan.FromSeconds(_config.RefreshRate));
+					RunStartupTasks();
+					_timer = new Timer(e => RunTimerTasks(), null, TimeSpan.Zero,
+						TimeSpan.FromSeconds(_config.IssCurrentLocationPollRate));
 				}
-				catch (System.Exception ex)
+				catch (Exception ex)
 				{
 					_logger.LogError($"StartAsync{Environment.NewLine}{ex}");
 				}
@@ -47,40 +48,14 @@ namespace SatTrack.Service.Services
 			return Task.CompletedTask;
 		}
 
-		private void RunTasks()
+		private void RunStartupTasks()
 		{
-			PlotSatellites();
-			GetPeopleInSpace();
+			_satTrackService.GetPeopleInSpace();
 		}
 
-		private void PlotSatellites()
+		private void RunTimerTasks()
 		{
-			var location = _apiService.GetIssLocation();
-			if (location != null)
-			{
-				_logger.LogInformation($"GetIssPosition...\r\nCraft: {location.Craft}\r\n\tTimestamp: {location.Timestamp}\r\n\tDateTime: {location.DateTime}\r\n\t" +
-					$"Latitude: {location.Latitude}\r\n\tLongitude: {location.Longitude}");
-			}
-			else
-			{
-				_logger.LogWarning("Invalid response.");
-			}
-		}
-
-		private void GetPeopleInSpace()
-		{
-			var response = _apiService.GetPeopleInSpace();
-			if (response != null)
-			{
-				StringBuilder sb = new();
-				foreach (var people in response.People)
-					sb.Append($"\r\n\tName: {people.Name}, Craft: {people.Craft}");
-				_logger.LogInformation($"GetPeopleInSpace...\r\n\tMessage: {response.Message}\r\n\tNumber: {response.Number}" + sb.ToString());
-			}
-			else
-			{
-				_logger.LogWarning("Invalid response.");
-			}
+			_satTrackService.PlotSatellites();
 		}
 
 		public Task StopAsync(CancellationToken cancellationToken)

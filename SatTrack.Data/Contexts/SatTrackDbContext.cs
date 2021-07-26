@@ -18,8 +18,8 @@ namespace SatTrack.Data.Contexts
 			base.OnModelCreating(modelBuilder);
 
 			modelBuilder.Entity<SatelliteLocation>().Property(l => l.Craft);
-			modelBuilder.Entity<SatelliteLocation>().Property(l => l.Latitude);
-			modelBuilder.Entity<SatelliteLocation>().Property(l => l.Longitude);
+			modelBuilder.Entity<SatelliteLocation>().Property(l => l.Location.Latitude);
+			modelBuilder.Entity<SatelliteLocation>().Property(l => l.Location.Longitude);
 			modelBuilder.Entity<SatelliteLocation>().Property(l => l.Timestamp);
 			modelBuilder.Entity<SatelliteLocation>().Property(l => l.DateTime);
 		}
