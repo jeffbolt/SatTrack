@@ -1,4 +1,4 @@
-﻿namespace SatTrack.Data.Models
+﻿namespace SatTrack.Service.Models
 {
 	public class TleLine1
 	{

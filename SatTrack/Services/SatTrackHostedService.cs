@@ -15,12 +15,15 @@ namespace SatTrack.Service.Services
 		private Timer _timer;
 		private readonly object _lockObject = new();
 		private readonly ISatTrackService _satTrackService;
+		private readonly IStationService _stationService;
 		private readonly ISatTrackConfig _config;
 		private readonly ILogger<SatTrackHostedService> _logger;
 
-		public SatTrackHostedService(ISatTrackService satTrackService, ISatTrackConfig config, ILogger<SatTrackHostedService> logger)
+		public SatTrackHostedService(ISatTrackService satTrackService, IStationService stationService, 
+			ISatTrackConfig config, ILogger<SatTrackHostedService> logger)
 		{
 			_satTrackService = satTrackService;
+			_stationService = stationService;
 			_config = config;
 			_logger = logger;
 		}
@@ -51,6 +54,7 @@ namespace SatTrack.Service.Services
 		private void RunStartupTasks()
 		{
 			_satTrackService.GetPeopleInSpace();
+			_stationService.ReadNoradStations();
 		}
 
 		private void RunTimerTasks()

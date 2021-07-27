@@ -2,13 +2,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace SatTrack.Data.Models
+namespace SatTrack.Service.Models
 {
 	// Two-line element set https://en.wikipedia.org/wiki/Two-line_element_set
 	public class TleFormat
 	{
-		public TleLine1 TleLine1 { get; set; }
-		public TleLine2 TleLine2 { get; set; }
+		private string _line1;
+		private string _line2;
+		public TleLine1 Line1 { get; set; }
+		public TleLine2 Line2 { get; set; }
 
 		public TleFormat() { }
 
@@ -19,7 +21,10 @@ namespace SatTrack.Data.Models
 
 		private void MapFields(string line1, string line2)
 		{
-			TleLine1 = new TleLine1
+			_line1 = line1;
+			_line2 = line2;
+
+			Line1 = new TleLine1
 			{
 				LineNumber = ushort.Parse(line1.Substring(0, 1)),
 				SatelliteCatalogNumber = ushort.Parse(line1.Substring(2, 5)),
@@ -40,7 +45,7 @@ namespace SatTrack.Data.Models
 				Checksum = ushort.Parse(line1.Substring(68, 1).Trim())
 			};
 
-			TleLine2 = new TleLine2
+			Line2 = new TleLine2
 			{
 				LineNumber = ushort.Parse(line2.Substring(0, 1)),
 				SatelliteCatalogNumber = ushort.Parse(line2.Substring(2, 6)),
@@ -53,6 +58,34 @@ namespace SatTrack.Data.Models
 				RevolutionNumberAtEpoch = ulong.Parse(line2.Substring(63, 5).Trim()),
 				Checksum = ushort.Parse(line2.Substring(68, 1).Trim())
 			};
+		}
+
+		public bool ChecksumIsValid(int lineNumber)
+		{
+			if (lineNumber == 1)
+				return CalculateCheckSum(_line1) == Line1.Checksum;
+			else if (lineNumber == 2)
+				return CalculateCheckSum(_line2) == Line2.Checksum;
+			else
+				throw new ArgumentException("Invalid Line Number.");
+		}
+
+		public static long CalculateCheckSum(string line)
+		{
+			// The checksums for each line are calculated by adding all numerical digits on that line, including the line number.
+			// One is added to the checksum for each negative sign (-) on that line. All other non-digit characters are ignored.
+			var chars = line.Remove(line.Length - 1, 1).Replace(" ", "").ToCharArray();
+			long sum = 0;
+
+			foreach (char ch in chars)
+			{
+				if (char.IsDigit(ch))
+					sum += long.Parse(ch.ToString());
+				else if (ch == '-')
+					sum += 1;
+			}
+
+			return sum % 10;
 		}
 
 		//private static string GetSegment(List<char> list, int start, int length)

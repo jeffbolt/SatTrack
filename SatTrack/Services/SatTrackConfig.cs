@@ -9,6 +9,6 @@ namespace SatTrack.Service.Services
 		public Uri IssCurrentLocationUri { get; set; }
 		public double IssCurrentLocationPollRate { get; set; }
 		public Uri PeopleInSpaceUri { get; set; }
-		public Uri NoradLocationsUri { get; set; }
+		public Uri NoradStationsUri { get; set; }
 	}
 }

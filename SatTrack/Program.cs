@@ -44,12 +44,13 @@ namespace SatTrack.Service
 							IssCurrentLocationUri = issCurrentLocation,
 							IssCurrentLocationPollRate = issPollRate,
 							PeopleInSpaceUri = peopleInSpace,
-							NoradLocationsUri = noradStations
+							NoradStationsUri = noradStations
 						}
 					);
 					
 					services.AddScoped<ApiService>();
 					services.AddScoped<ISatTrackService, SatTrackService>();
+					services.AddScoped<IStationService, StationService>();
 					services.AddHostedService<SatTrackHostedService>();
 					//services.AddDbContext<ISatTrackDbContext, SatTrackDbContext>();
 

@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 
-using SatTrack.Data.Models;
+using SatTrack.Service.Models;
 
 using Xunit;
 
@@ -16,7 +16,7 @@ namespace SatTrack.Data.Tests.Models
 		{
 			var expected = new TleFormat
 			{
-				TleLine1 = new TleLine1
+				Line1 = new TleLine1
 				{
 					LineNumber = 1,
 					SatelliteCatalogNumber = 25544,
@@ -36,7 +36,7 @@ namespace SatTrack.Data.Tests.Models
 					ElementSetNumber = 292,
 					Checksum = 7
 				},
-				TleLine2 = new TleLine2
+				Line2 = new TleLine2
 				{
 					LineNumber = 2,
 					SatelliteCatalogNumber = 25544,
@@ -54,28 +54,13 @@ namespace SatTrack.Data.Tests.Models
 			var actual = new TleFormat(line1, line2);
 			actual.Should().BeEquivalentTo(expected);
 
-			long checksum1 = GetCheckSum(line1);
-			Assert.Equal(actual.TleLine1.Checksum, checksum1);
-			long checksum2 = GetCheckSum(line2);
-			Assert.Equal(actual.TleLine2.Checksum, checksum2);
-		}
+			long checksum1 = TleFormat.CalculateCheckSum(line1);
+			Assert.Equal(actual.Line1.Checksum, checksum1);
+			long checksum2 = TleFormat.CalculateCheckSum(line2);
+			Assert.Equal(actual.Line2.Checksum, checksum2);
 
-		private static long GetCheckSum(string line)
-		{
-			// The checksums for each line are calculated by adding all numerical digits on that line, including the line number.
-			// One is added to the checksum for each negative sign (-) on that line. All other non-digit characters are ignored.
-			var chars = line.Remove(line1.Length - 1, 1).Replace(" ", "").ToCharArray();
-			long sum = 0;
-
-			foreach (char ch in chars)
-			{
-				if (char.IsDigit(ch))
-					sum += long.Parse(ch.ToString());
-				else if (ch == '-')
-					sum += 1;
-			}
-
-			return sum % 10;
+			Assert.True(actual.ChecksumIsValid(1));
+			Assert.True(actual.ChecksumIsValid(2));
 		}
 	}
 }
