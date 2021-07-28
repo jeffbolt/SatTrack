@@ -13,14 +13,17 @@ namespace SatTrack.Service.Services
 	public class SatTrackHostedService : IHostedService, IDisposable
 	{
 		private Timer _timer;
-		private object _lockObject = new();
-		private readonly ApiService _apiService;
+		private readonly object _lockObject = new();
+		private readonly ISatTrackService _satTrackService;
+		private readonly IStationService _stationService;
 		private readonly ISatTrackConfig _config;
 		private readonly ILogger<SatTrackHostedService> _logger;
 
-		public SatTrackHostedService(ApiService apiService, ISatTrackConfig config, ILogger<SatTrackHostedService> logger)
+		public SatTrackHostedService(ISatTrackService satTrackService, IStationService stationService, 
+			ISatTrackConfig config, ILogger<SatTrackHostedService> logger)
 		{
-			_apiService = apiService;
+			_satTrackService = satTrackService;
+			_stationService = stationService;
 			_config = config;
 			_logger = logger;
 		}
@@ -31,10 +34,11 @@ namespace SatTrack.Service.Services
 			{
 				try
 				{
-					_timer = new Timer(e => RunTasks(), null, TimeSpan.Zero,
-						TimeSpan.FromSeconds(_config.RefreshRate));
+					RunStartupTasks();
+					_timer = new Timer(e => RunTimerTasks(), null, TimeSpan.Zero,
+						TimeSpan.FromSeconds(_config.IssCurrentLocationPollRate));
 				}
-				catch (System.Exception ex)
+				catch (Exception ex)
 				{
 					_logger.LogError($"StartAsync{Environment.NewLine}{ex}");
 				}
@@ -47,40 +51,15 @@ namespace SatTrack.Service.Services
 			return Task.CompletedTask;
 		}
 
-		private void RunTasks()
+		private void RunStartupTasks()
 		{
-			PlotSatellites();
-			GetPeopleInSpace();
+			_satTrackService.GetPeopleInSpace();
+			_stationService.ReadNoradStations();
 		}
 
-		private void PlotSatellites()
+		private void RunTimerTasks()
 		{
-			var response = _apiService.GetIssPosition();
-			if (response != null)
-			{
-				_logger.LogInformation($"GetIssPosition...\r\n\tMessage: {response.Message}\r\n\tTimestamp: {response.Timestamp}\r\n\tDateTime: {response.DateTime}\r\n\t" +
-					$"Latitude: {response.Iss_Position.Latitude}\r\n\tLongitude: {response.Iss_Position.Longitude}");
-			}
-			else
-			{
-				_logger.LogWarning("Invalid response.");
-			}
-		}
-
-		private void GetPeopleInSpace()
-		{
-			var response = _apiService.GetPeopleInSpace();
-			if (response != null)
-			{
-				StringBuilder sb = new();
-				foreach (var people in response.People)
-					sb.Append($"\r\n\tName: {people.Name}, Craft: {people.Craft}");
-				_logger.LogInformation($"GetPeopleInSpace...\r\n\tMessage: {response.Message}\r\n\tNumber: {response.Number}" + sb.ToString());
-			}
-			else
-			{
-				_logger.LogWarning("Invalid response.");
-			}
+			_satTrackService.PlotSatellites();
 		}
 
 		public Task StopAsync(CancellationToken cancellationToken)
