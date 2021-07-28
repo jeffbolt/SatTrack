@@ -4,7 +4,7 @@ using SatTrack.Service.Models;
 
 using Xunit;
 
-namespace SatTrack.Data.Tests.Models
+namespace SatTrack.Service.Tests.Models
 {
 	public class TleFormatTests
 	{

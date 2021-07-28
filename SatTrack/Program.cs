@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using RestSharp;
+
 using SatTrack.Service.Services;
 using SatTrack.Service.Services.Interfaces;
 
@@ -47,7 +49,7 @@ namespace SatTrack.Service
 							NoradStationsUri = noradStations
 						}
 					);
-					
+					services.AddScoped<IRestClient, RestClient>();
 					services.AddScoped<ApiService>();
 					services.AddScoped<ISatTrackService, SatTrackService>();
 					services.AddScoped<IStationService, StationService>();

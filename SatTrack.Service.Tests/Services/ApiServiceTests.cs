@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
 
+using Microsoft.Extensions.Logging;
+
 using Newtonsoft.Json;
 
 using NSubstitute;
@@ -11,8 +13,8 @@ using SatTrack.Service.Services;
 using SatTrack.Service.Services.Interfaces;
 
 using System.Net;
-using System.Net.Http;
 using System.Text;
+using System.Threading;
 
 using Xunit;
 
@@ -22,21 +24,21 @@ namespace SatTrack.Service.Tests.Services
 	{
 		private readonly ISatTrackConfig _config;
 		private readonly IRestClient _restClient;
-		//private readonly IHttpClientFactory _httpFactory;
+		private readonly ILogger<ApiService> _logger;
 
 		public ApiServiceTests()
 		{
 			_config = Substitute.For<ISatTrackConfig>();
 			_restClient = Substitute.For<IRestClient>();
-			//_restClient = new RestClient(_config.IssCurrentLocation);
-			//_httpFactory = Substitute.For<IHttpClientFactory>();
+			_logger = Substitute.For<ILogger<ApiService>>();
 		}
 
 		[Fact]
-		public void GetIssLocation_ReturnsSuccess()
+		public async void GetIssLocation_ReturnsSuccess()
 		{
-			var expected = new SatelliteLocation
+			var expected = new IssCurrentLocationResponse
 			{
+				Message = "success",
 				Craft = "ISS",
 				Location = new LatLong
 				{
@@ -45,9 +47,6 @@ namespace SatTrack.Service.Tests.Services
 				},
 				Timestamp = UnixTimeHelper.CurrentUnixTime()
 			};
-			//_httpFactory.CreateClient().ReturnsForAnyArgs(
-			//	FakeHttpClient.GetFakeClient(HttpStatusCode.OK, expected));
-			//var service = new ApiService(_httpFactory);
 
 			string message = JsonConvert.SerializeObject(expected);
 			var response = new RestResponse
@@ -60,12 +59,16 @@ namespace SatTrack.Service.Tests.Services
 
 			_config.IssCurrentLocationUri.Returns(new System.Uri("http://test.api"));
 			_restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(response);
-			var service = new ApiService(_config);
+			var service = new ApiService(_restClient, _config, _logger);
 			
-			var result = service.GetIssLocation();
+			var actual = await service.GetIssLocationAsync();
 
-			//_httpFactory.Received(1).CreateClient("CompanyAPI");
-			result.Should().BeEquivalentTo(expected);
+			await _restClient.Received(1).ExecuteAsync(Arg.Any<IRestRequest>(), Arg.Any<CancellationToken>());
+
+			Assert.NotNull(actual);
+			Assert.IsType<IssCurrentLocationResponse>(actual);
+
+			actual.Should().BeEquivalentTo(expected);
 		}
 	}
 }

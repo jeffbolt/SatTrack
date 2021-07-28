@@ -6,7 +6,9 @@ namespace SatTrack.Service.Services.Interfaces
 {
 	public interface IApiService
 	{
-		Task<SatelliteLocation> GetIssLocation();
-		Task<PeopleInSpaceResponse> GetPeopleInSpace();
+		IssCurrentLocationResponse GetIssLocation();
+		Task<IssCurrentLocationResponse> GetIssLocationAsync();
+		Task<PeopleInSpaceResponse> GetPeopleInSpaceAsync();
+		PeopleInSpaceResponse GetPeopleInSpace();
 	}
 }

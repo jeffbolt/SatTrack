@@ -11,7 +11,7 @@ namespace SatTrack.Service.Services
 		private readonly ApiService _apiService;
 		private readonly ILogger<SatTrackService> _logger;
 
-		public SatTrackService(ApiService apiService, ISatTrackConfig config, ILogger<SatTrackService> logger)
+		public SatTrackService(ApiService apiService, ILogger<SatTrackService> logger)
 		{
 			_apiService = apiService;
 			_logger = logger;
@@ -19,7 +19,7 @@ namespace SatTrack.Service.Services
 
 		public void PlotSatellites()
 		{
-			var location = _apiService.GetIssLocation().Result;
+			var location = _apiService.GetIssLocationAsync().Result;
 			if (location != null)
 			{
 				_logger.LogInformation($"GetIssPosition...\r\n\tCraft: {location.Craft}\r\n\tTimestamp: {location.Timestamp}\r\n\tDateTime: {location.DateTime}\r\n\t" +
@@ -33,7 +33,7 @@ namespace SatTrack.Service.Services
 
 		public void GetPeopleInSpace()
 		{
-			var response = _apiService.GetPeopleInSpace().Result;
+			var response = _apiService.GetPeopleInSpaceAsync().Result;
 			if (response != null)
 			{
 				StringBuilder sb = new();
