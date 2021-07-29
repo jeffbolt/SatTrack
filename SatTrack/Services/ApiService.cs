@@ -3,7 +3,6 @@
 using Newtonsoft.Json;
 
 using RestSharp;
-using RestSharp.Serializers.NewtonsoftJson;
 
 using SatTrack.Service.Models;
 using SatTrack.Service.Services.Interfaces;

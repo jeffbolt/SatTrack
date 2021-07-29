@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SatTrack.Data.Tests", "SatT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SatTrack.Service.Tests", "SatTrack.Service.Tests\SatTrack.Service.Tests.csproj", "{EC0C9131-3249-4518-96F2-15E9749628E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SatTrack.Service.Tests.NUnit", "SatTrack.Service.Tests.NUnit\SatTrack.Service.Tests.NUnit.csproj", "{108099C1-4A92-4561-B99A-1B8DA307754B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{EC0C9131-3249-4518-96F2-15E9749628E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC0C9131-3249-4518-96F2-15E9749628E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC0C9131-3249-4518-96F2-15E9749628E5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{108099C1-4A92-4561-B99A-1B8DA307754B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{108099C1-4A92-4561-B99A-1B8DA307754B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{108099C1-4A92-4561-B99A-1B8DA307754B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{108099C1-4A92-4561-B99A-1B8DA307754B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

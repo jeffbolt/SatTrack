@@ -6,6 +6,7 @@ namespace SatTrack.Service.Services.Interfaces
 	{
 		Uri IssCurrentLocationUri { get; set; }
 		double IssCurrentLocationPollRate { get; set; }
+		public bool IssCurrentLocationExportToFile { get; set; }
 		Uri PeopleInSpaceUri { get; set; }
 		Uri NoradStationsUri { get; set; }
 	}

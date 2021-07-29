@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using SatTrack.Service.Services.Interfaces;
 
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +18,7 @@ namespace SatTrack.Service.Services
 		private readonly ISatTrackConfig _config;
 		private readonly ILogger<SatTrackHostedService> _logger;
 
-		public SatTrackHostedService(ISatTrackService satTrackService, IStationService stationService, 
+		public SatTrackHostedService(ISatTrackService satTrackService, IStationService stationService,
 			ISatTrackConfig config, ILogger<SatTrackHostedService> logger)
 		{
 			_satTrackService = satTrackService;
@@ -59,7 +58,7 @@ namespace SatTrack.Service.Services
 
 		private void RunTimerTasks()
 		{
-			_satTrackService.PlotSatellites();
+			_satTrackService.PlotSatellites(_config.IssCurrentLocationExportToFile);
 		}
 
 		public Task StopAsync(CancellationToken cancellationToken)

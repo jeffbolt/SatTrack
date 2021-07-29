@@ -29,7 +29,10 @@ namespace SatTrack.Service
 				throw new ArgumentException("Invalid ISS_CURRENT_LOCATION_URL.");
 
 			if (!double.TryParse(Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION_POLL_RATE"), out double issPollRate))
-				throw new ArgumentException("Invalid refresh rate.");
+				throw new ArgumentException("Invalid ISS_CURRENT_LOCATION_POLL_RATE.");
+
+			if (!bool.TryParse(Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION_EXPORT_TO_FILE"), out bool issExportToFile))
+				throw new ArgumentException("Invalid ISS_CURRENT_LOCATION_EXPORT_TO_FILE.");
 
 			if (!Uri.TryCreate(Environment.GetEnvironmentVariable("PEOPLE_IN_SPACE_URL"), UriKind.Absolute, out Uri peopleInSpace))
 				throw new ArgumentException("Invalid PEOPLE_IN_SPACE_URL.");
@@ -40,19 +43,22 @@ namespace SatTrack.Service
 			var builder = new HostBuilder()
 				.ConfigureServices((context, services) =>
 				{
-					services.AddScoped<IAssemblyService, AssemblyService>();
 					services.AddScoped<ISatTrackConfig>(config => new SatTrackConfig
 						{
 							IssCurrentLocationUri = issCurrentLocation,
 							IssCurrentLocationPollRate = issPollRate,
+							IssCurrentLocationExportToFile = issExportToFile,
 							PeopleInSpaceUri = peopleInSpace,
 							NoradStationsUri = noradStations
 						}
 					);
+					services.AddScoped<IAssemblyService, AssemblyService>();
 					services.AddScoped<IRestClient, RestClient>();
-					services.AddScoped<ApiService>();
+					services.AddScoped<IApiService, ApiService>();
 					services.AddScoped<ISatTrackService, SatTrackService>();
 					services.AddScoped<IStationService, StationService>();
+					services.AddScoped<IExportService, ExportService>();
+					
 					services.AddHostedService<SatTrackHostedService>();
 					//services.AddDbContext<ISatTrackDbContext, SatTrackDbContext>();
 
