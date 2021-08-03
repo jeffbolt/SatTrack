@@ -3,6 +3,7 @@
 using SatTrack.Service.Services.Interfaces;
 
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SatTrack.Service.Services
 {
@@ -19,16 +20,16 @@ namespace SatTrack.Service.Services
 			_logger = logger;
 		}
 
-		public void PlotSatellites(bool export = false)
+		public async Task PlotSatellites(bool export = false)
 		{
-			var location = _apiService.GetIssLocationAsync().Result;
+			var location = await _apiService.GetIssLocation();
 			if (location != null)
 			{
 				_logger.LogInformation($"GetIssPosition...\r\n\tCraft: {location.Craft}\r\n\tTimestamp: {location.Timestamp}\r\n\tDateTime: {location.DateTime}\r\n\t" +
 					$"Latitude: {location.Location.Latitude}\r\n\tLongitude: {location.Location.Longitude}");
 				if (export)
 				{
-					_exportService.ExportIssLocationToCsv(location);
+					await _exportService.ExportIssLocationToCsv(location);
 				}
 			}
 			else
@@ -37,9 +38,9 @@ namespace SatTrack.Service.Services
 			}
 		}
 
-		public void GetPeopleInSpace()
+		public async Task GetPeopleInSpace()
 		{
-			var response = _apiService.GetPeopleInSpaceAsync().Result;
+			var response = await _apiService.GetPeopleInSpace();
 			if (response != null)
 			{
 				StringBuilder sb = new();

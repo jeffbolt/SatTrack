@@ -1,7 +1,9 @@
-﻿namespace SatTrack.Service.Services.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace SatTrack.Service.Services.Interfaces
 {
 	public interface IStationService
 	{
-		void ReadNoradStations();
+		Task ReadNoradStations();
 	}
 }

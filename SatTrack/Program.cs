@@ -34,6 +34,10 @@ namespace SatTrack.Service
 			if (!bool.TryParse(Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION_EXPORT_TO_FILE"), out bool issExportToFile))
 				throw new ArgumentException("Invalid ISS_CURRENT_LOCATION_EXPORT_TO_FILE.");
 
+			string issExportFileName = Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION_EXPORT_FILENAME")?.Trim();
+			if (issExportToFile && string.IsNullOrEmpty(issExportFileName))
+				throw new ArgumentException("Invalid ISS_CURRENT_LOCATION_EXPORT_FILENAME.");
+
 			if (!Uri.TryCreate(Environment.GetEnvironmentVariable("PEOPLE_IN_SPACE_URL"), UriKind.Absolute, out Uri peopleInSpace))
 				throw new ArgumentException("Invalid PEOPLE_IN_SPACE_URL.");
 
@@ -48,6 +52,7 @@ namespace SatTrack.Service
 							IssCurrentLocationUri = issCurrentLocation,
 							IssCurrentLocationPollRate = issPollRate,
 							IssCurrentLocationExportToFile = issExportToFile,
+							IssCurrentLocationExportFileName = issExportFileName,
 							PeopleInSpaceUri = peopleInSpace,
 							NoradStationsUri = noradStations
 						}
@@ -68,6 +73,7 @@ namespace SatTrack.Service
 			await builder.RunConsoleAsync();
 		}
 
+		#region Alternate Startup Method
 		//private static void Main(string[] args)
 		//{
 		//	CreateHostBuilder(args).Build().Run();
@@ -75,29 +81,12 @@ namespace SatTrack.Service
 
 		//private static IHostBuilder CreateHostBuilder(string[] args)
 		//{
-		//	string url = Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION_URL");
-		//	if (!Uri.TryCreate(url, UriKind.Absolute, out Uri openNotifyApiUri))
-		//		throw new ArgumentException("Invalid OpenNotify API URL.");
-
-		//	string refresh = Environment.GetEnvironmentVariable("ISS_CURRENT_LOCATION_POLL_RATE");
-		//	if (!double.TryParse(refresh, out double refreshRate))
-		//		throw new ArgumentException("Invalid refresh rate.");
-
 		//	return Host.CreateDefaultBuilder(args)
 		//		.ConfigureServices((context, services) =>
 		//		{
-		//			services.AddScoped<IAssemblyService, AssemblyService>();
-		//			services.AddScoped<ISatTrackConfig>(config =>
-		//				new SatTrackConfig
-		//				{
-		//					OpenNotifyApiUri = openNotifyApiUri,
-		//					RefreshRate = refreshRate
-		//				}
-		//			);
-		//			services.AddScoped<IApiService, ApiService>();
-		//			services.AddHostedService<SatTrackHostedService>();
 		//		});
 		//}
+		#endregion
 
 		private static void ConfigureLogging(IServiceCollection services)
 		{

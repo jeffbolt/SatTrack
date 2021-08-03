@@ -61,7 +61,7 @@ namespace SatTrack.Service.Tests.Services
 			_restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(response);
 			var service = new ApiService(_restClient, _config, _logger);
 			
-			var actual = await service.GetIssLocationAsync();
+			var actual = await service.GetIssLocation();
 
 			await _restClient.Received(1).ExecuteAsync(Arg.Any<IRestRequest>(), Arg.Any<CancellationToken>());
 

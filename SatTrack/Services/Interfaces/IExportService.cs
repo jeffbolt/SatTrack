@@ -1,9 +1,11 @@
 ﻿using SatTrack.Service.Models;
 
+using System.Threading.Tasks;
+
 namespace SatTrack.Service.Services.Interfaces
 {
 	public interface IExportService
 	{
-		bool ExportIssLocationToCsv(SatelliteLocation location);
+		Task<bool> ExportIssLocationToCsv(SatelliteLocation location);
 	}
 }
