@@ -1,8 +1,10 @@
-﻿namespace SatTrack.Service.Services.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace SatTrack.Service.Services.Interfaces
 {
 	public interface ISatTrackService
 	{
-		void GetPeopleInSpace();
-		void PlotSatellites();
+		Task PlotSatellites(bool export = false);
+		Task GetPeopleInSpace();
 	}
 }

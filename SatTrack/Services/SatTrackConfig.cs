@@ -8,6 +8,8 @@ namespace SatTrack.Service.Services
 	{
 		public Uri IssCurrentLocationUri { get; set; }
 		public double IssCurrentLocationPollRate { get; set; }
+		public bool IssCurrentLocationExportToFile { get; set; }
+		public string IssCurrentLocationExportFileName { get; set; }
 		public Uri PeopleInSpaceUri { get; set; }
 		public Uri NoradStationsUri { get; set; }
 	}
