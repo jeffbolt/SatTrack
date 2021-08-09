@@ -4,7 +4,7 @@ namespace SatTrack.Service.Services.Interfaces
 {
 	public interface ISatTrackService
 	{
-		Task PlotSatellites(bool export = false);
-		Task GetPeopleInSpace();
+		Task<bool> PlotSatellites(bool export = false);
+		Task<bool> GetPeopleInSpace();
 	}
 }

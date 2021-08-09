@@ -12,7 +12,7 @@ namespace SatTrack.Service.Services
 	public class SatTrackHostedService : IHostedService, IDisposable
 	{
 		private Timer _timer;
-		//private readonly object _lockObject = new();
+		private readonly object _lockObject = new();
 		private readonly ISatTrackService _satTrackService;
 		private readonly IStationService _stationService;
 		private readonly ISatTrackConfig _config;
@@ -29,11 +29,13 @@ namespace SatTrack.Service.Services
 
 		public async Task StartAsync(CancellationToken cancellationToken)
 		{
-			//if (Monitor.TryEnter(_lockObject))
-			//{
+			await RunStartupTasks();
+
+			if (Monitor.TryEnter(_lockObject))
+			{
 				try
 				{
-					await RunStartupTasks();
+
 					_timer = new Timer(async e => await RunTimerTasks(), null, TimeSpan.Zero,
 						TimeSpan.FromSeconds(_config.IssCurrentLocationPollRate));
 				}
@@ -41,11 +43,11 @@ namespace SatTrack.Service.Services
 				{
 					_logger.LogError($"StartAsync threw an exception.{Environment.NewLine}{ex}");
 				}
-				//finally
-				//{
-				//	Monitor.Exit(_lockObject);
-				//}
-			//}
+				finally
+				{
+					Monitor.Exit(_lockObject);
+				}
+			}
 		}
 
 		private async Task RunStartupTasks()
@@ -56,7 +58,9 @@ namespace SatTrack.Service.Services
 
 		private async Task RunTimerTasks()
 		{
-			await _satTrackService.PlotSatellites(_config.IssCurrentLocationExportToFile);
+			System.Diagnostics.Debug.WriteLine($"RunTimerTasks called at {DateTime.Now:MM/dd/yyyy hh:mm:ss:fff}");
+			bool result = await _satTrackService.PlotSatellites(_config.IssCurrentLocationExportToFile);
+			System.Diagnostics.Debug.WriteLine($"RunTimerTasks returned {result} at {DateTime.Now:MM/dd/yyyy hh:mm:ss:fff}");
 		}
 
 		public Task StopAsync(CancellationToken cancellationToken)

@@ -4,6 +4,6 @@ namespace SatTrack.Service.Services.Interfaces
 {
 	public interface IStationService
 	{
-		Task ReadNoradStations();
+		Task<bool> ReadNoradStations();
 	}
 }

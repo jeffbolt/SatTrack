@@ -22,7 +22,7 @@ namespace SatTrack.Service.Services
 			_logger = logger;
 		}
 
-		public async Task ReadNoradStations()
+		public async Task<bool> ReadNoradStations()
 		{
 			int i = 0;
 			var sb = new StringBuilder();
@@ -79,10 +79,12 @@ namespace SatTrack.Service.Services
 				}
 
 				_logger.LogInformation($"Station Information{sb}");
+				return true;
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError($"StationService.ReadNoradStationsAsync threw an exception.{Environment.NewLine}{ex}");
+				return false;
 			}
 		}
 

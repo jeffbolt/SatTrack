@@ -20,7 +20,7 @@ namespace SatTrack.Service.Services
 			_logger = logger;
 		}
 
-		public async Task PlotSatellites(bool export = false)
+		public async Task<bool> PlotSatellites(bool export = false)
 		{
 			var location = await _apiService.GetIssLocation();
 			if (location != null)
@@ -28,17 +28,18 @@ namespace SatTrack.Service.Services
 				_logger.LogInformation($"GetIssPosition...\r\n\tCraft: {location.Craft}\r\n\tTimestamp: {location.Timestamp}\r\n\tDateTime: {location.DateTime}\r\n\t" +
 					$"Latitude: {location.Location.Latitude}\r\n\tLongitude: {location.Location.Longitude}");
 				if (export)
-				{
-					await _exportService.ExportIssLocationToCsv(location);
-				}
+					return await _exportService.ExportIssLocationToCsv(location);
+				else
+					return true;
 			}
 			else
 			{
 				_logger.LogWarning("Invalid response.");
+				return false;
 			}
 		}
 
-		public async Task GetPeopleInSpace()
+		public async Task<bool> GetPeopleInSpace()
 		{
 			var response = await _apiService.GetPeopleInSpace();
 			if (response != null)
@@ -47,10 +48,12 @@ namespace SatTrack.Service.Services
 				foreach (var people in response.People)
 					sb.Append($"\r\n\tName: {people.Name}, Craft: {people.Craft}");
 				_logger.LogInformation($"GetPeopleInSpace...\r\n\tMessage: {response.Message}\r\n\tNumber: {response.Number}" + sb.ToString());
+				return true;
 			}
 			else
 			{
 				_logger.LogWarning("Invalid response.");
+				return false;
 			}
 		}
 	}
