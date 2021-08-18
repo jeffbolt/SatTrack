@@ -1,0 +1,85 @@
+<html>
+	<head>
+		<title>ISS Leaflet Demo</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+		   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+		   
+		<!-- Make sure you put this AFTER Leaflet's CSS -->
+		 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+		   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+		   
+		  <style>
+			#mapid { height: 600px; }
+		  </style>
+	</head>
+	<body>
+		<div id="mapid"></div>
+		<script>
+			// Leaflet Tutorials https://leafletjs.com/examples/quick-start/
+			var map = L.map('mapid').setView([44.8779, -93.31], 13);
+			
+			// Add a Mapbox Streets tile layer https://account.mapbox.com/auth/signup/
+			var accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+			L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + accessToken, {
+				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+				maxZoom: 18,
+				id: 'mapbox/streets-v11',
+				tileSize: 512,
+				zoomOffset: -1,
+				accessToken: accessToken
+			}).addTo(map);
+			
+			// Add a marker
+			var marker = L.marker([44.8779, -93.31]).addTo(map);
+			
+			// Add custom icon
+			var satIcon = L.icon({
+				iconUrl: 'icons/saticon.png',
+				//shadowUrl: 'saticon-shadow.png',
+				iconSize:     [32, 32], // size of the icon
+				shadowSize:   [32, 32], // size of the shadow
+				iconAnchor:   [16, 16], // point of the icon which will correspond to marker's location
+				shadowAnchor: [4, 32],  // the same for the shadow
+				popupAnchor:  [-3, -3] // point from which the popup should open relative to the iconAnchor
+			});
+			
+			L.marker([44.8779, -93.31], {icon: satIcon}).addTo(map);
+			// Add a circle
+			var circle = L.circle([44.8779, -93.31], {
+				color: 'red',
+				fillColor: '#f03',
+				fillOpacity: 0.25,
+				radius: 500
+			}).addTo(map);
+			
+			// Add a polygon
+			var polygon = L.polygon([
+				[44.878, -93.31],
+				[44.872, -93.28],
+				[44.879, -93.267]
+			]).addTo(map);
+			
+			// Add popups
+			/*marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+			circle.bindPopup("I am a circle.");
+			polygon.bindPopup("I am a polygon.");*/
+			
+			// Add popup as layers (use openOn instead of addTo because it handles automatic closing of a previously opened popup when opening a new one)
+			/*var popup = L.popup()
+				.setLatLng([44.8779, -93.31])
+				.setContent("I am a standalone popup.")
+				.openOn(map);*/
+			
+			// Use a popup instead of an alert
+			var popup = L.popup();
+			map.on('click', onMapClick);
+			
+			function onMapClick(e) {
+				popup
+					.setLatLng(e.latlng)
+					.setContent("You clicked the map at " + e.latlng.toString())
+					.openOn(map);
+			}
+		  </script>
+	</body>
+</html>
