@@ -1,19 +1,22 @@
 <html>
 <head>
 	<title>ISS Leaflet Demo</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
 		  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
 
 	<!-- Make sure you put this AFTER Leaflet's CSS -->
 	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
 			integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+	<script src="leaflet/AnimatedMarker.js"></script>
 
 	<!--<script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/uuid@latest/dist/umd/uuidv4.min.js"></script>-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
 
 	<style type="text/css">
-		#mapid {
+		#map {
 			height: 600px;
 		}
 
@@ -26,118 +29,150 @@
 		}
 	</style>
 </head>
-	<body>
-		<div id="mapid"></div>
-		<script type="text/javascript">
-			function formatDate() {
-				return new Date().toISOString();
+<body>
+	<div id="map"></div>
+
+	<script type="text/javascript">
+		var timerId;
+		var map;
+
+		function formatDate() {
+			return new Date().toISOString();
+		}
+
+		function unixEpoch() {
+			return Date.now();
+		}
+
+		function generateUuid() {
+			return uuidv4();
+		}
+
+		function createMap() {
+			// Leaflet Tutorials https://leafletjs.com/examples/quick-start/
+			var map = L.map('map').setView([44.87789, -93.310434], 13);
+
+			// Add a Mapbox Streets tile layer https://account.mapbox.com/auth/signup/
+			const accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+			L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + accessToken, {
+				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+				maxZoom: 18,
+				id: 'mapbox/streets-v11',
+				tileSize: 512,
+				zoomOffset: -1,
+				accessToken: accessToken
+			}).addTo(map);
+
+			// Add a marker
+			var marker = L.marker([44.87789, -93.310434]).addTo(map);
+
+			// Add custom icon
+			var satIcon = L.icon({
+				iconUrl: 'icons/saticon.png',
+				//shadowUrl: 'saticon-shadow.png',
+				iconSize: [32, 32],		// size of the icon
+				shadowSize: [32, 32],	// size of the shadow
+				iconAnchor: [16, 16],	// point of the icon which will correspond to marker's location
+				shadowAnchor: [4, 32],	// the same for the shadow
+				popupAnchor: [-3, -3]	// point from which the popup should open relative to the iconAnchor
+			});
+
+			L.marker([44.87789, -93.310434], { icon: satIcon }).addTo(map);
+
+			// Add a circle
+			var circle = L.circle([44.87789, -93.310434], {
+				color: 'red',
+				fillColor: '#f03',
+				fillOpacity: 0.25,
+				radius: 500
+			}).addTo(map);
+
+			// Add a polygon
+			var polygon = L.polygon([
+				[44.878, -93.31],
+				[44.872, -93.28],
+				[44.879, -93.267]
+			]).addTo(map);
+
+			// Add popups
+			/*marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+			circle.bindPopup("I am a circle.");
+			polygon.bindPopup("I am a polygon.");*/
+
+			// Add popup as layers (use openOn instead of addTo because it handles automatic closing of a previously opened popup when opening a new one)
+			/*var popup = L.popup()
+				.setLatLng([44.87789, -93.310434])
+				.setContent("I am a standalone popup.")
+				.openOn(map);*/
+
+			// Use a popup instead of an alert
+			var popup = L.popup();
+			map.on('click', onMapClick);
+			function onMapClick(e) {
+				popup
+					.setLatLng(e.latlng)
+					.setContent("You clicked the map at " + e.latlng.toString())
+					.openOn(map);
 			}
 
-			function unixEpoch() {
-				return Date.now();
-			}
+			//var line = L.polyline([[40.68510, -73.94136], [40.68576, -73.94149], [40.68649, -73.94165]]);
+			var line = L.polyline([[44.87789, -93.310434], [44.89, -93.34], [44.9, -93.34]]);
+			map.addLayer(line);
+			console.log(line.getLatLngs());
+			return map;
+		}
 
-			function generateUuid() {
-				return uuidv4();
-			}
+		function moveNext() {
+			//L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: 'OSM' })
+			//	.addTo(map);
 
-			function createMap() {
-				// Leaflet Tutorials https://leafletjs.com/examples/quick-start/
-				var map = L.map('mapid').setView([44.8779, -93.31], 13);
+			//var line = L.polyline([[40.68510, -73.94136], [40.68576, -73.94149], [40.68649, -73.94165]]);
+			//map.addLayer(line);
 
-				// Add a Mapbox Streets tile layer https://account.mapbox.com/auth/signup/
-				const accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
-				L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=' + accessToken, {
-					attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-					maxZoom: 18,
-					id: 'mapbox/streets-v11',
-					tileSize: 512,
-					zoomOffset: -1,
-					accessToken: accessToken
-				}).addTo(map);
+			//var animatedMarker = L.animatedMarker(line.getLatLngs());
+			//map.addLayer(animatedMarker);
 
-				// Add a marker
-				var marker = L.marker([44.8779, -93.31]).addTo(map);
+			var latlng = L.latLng(44.87789, -93.310434);
+			//console.log(latlng);
+			map.panTo([44.9, -93.4]);
+		}
 
-				// Add custom icon
-				var satIcon = L.icon({
-					iconUrl: 'icons/saticon.png',
-					//shadowUrl: 'saticon-shadow.png',
-					iconSize: [32, 32],		// size of the icon
-					shadowSize: [32, 32],	// size of the shadow
-					iconAnchor: [16, 16],	// point of the icon which will correspond to marker's location
-					shadowAnchor: [4, 32],	// the same for the shadow
-					popupAnchor: [-3, -3]	// point from which the popup should open relative to the iconAnchor
-				});
+		function startTracker() {
+			console.log("Starting SatTracker at " + formatDate() + "...");
+			map = createMap();
+			timerId = setInterval(
+				() => {
+					//console.log(timerId + ', ' + generateUuid());
+					moveNext();
+				},
+				4000
+			);
+		}
 
-				L.marker([44.8779, -93.31], { icon: satIcon }).addTo(map);
+		function stopTracker() {
+			console.log("Stopping SatTracker at " + formatDate() + "...");
+			clearInterval(timerId);
+		}
 
-				// Add a circle
-				var circle = L.circle([44.8779, -93.31], {
-					color: 'red',
-					fillColor: '#f03',
-					fillOpacity: 0.25,
-					radius: 500
-				}).addTo(map);
+		//animationTest();
+		startTracker();
 
-				// Add a polygon
-				var polygon = L.polygon([
-					[44.878, -93.31],
-					[44.872, -93.28],
-					[44.879, -93.267]
-				]).addTo(map);
+		function animationTest() {
+			var map = L.map('map').setView([40.68576, -73.94149], 18);
 
-				// Add popups
-				/*marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
-				circle.bindPopup("I am a circle.");
-				polygon.bindPopup("I am a polygon.");*/
+			L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: 'OSM' })
+				.addTo(map);
 
-				// Add popup as layers (use openOn instead of addTo because it handles automatic closing of a previously opened popup when opening a new one)
-				/*var popup = L.popup()
-					.setLatLng([44.8779, -93.31])
-					.setContent("I am a standalone popup.")
-					.openOn(map);*/
+			var line = L.polyline([[40.68510, -73.94136], [40.68576, -73.94149], [40.68649, -73.94165]]);
+			map.addLayer(line);
 
-				// Use a popup instead of an alert
-				var popup = L.popup();
-				map.on('click', onMapClick);
-				function onMapClick(e) {
-					popup
-						.setLatLng(e.latlng)
-						.setContent("You clicked the map at " + e.latlng.toString())
-						.openOn(map);
-				}
+			var animatedMarker = L.animatedMarker(line.getLatLngs());
+			map.addLayer(animatedMarker);
+		}
+	</script>
 
-				return map;
-			}
-
-			var timerId;
-			var map;
-
-			function startTracker() {
-				console.log("Starting SatTracker at " + formatDate() + "...");
-				map = createMap();
-				timerId = setInterval(
-					() => {
-						console.log(timerId + ', ' + generateUuid());
-						//console.log(map);
-						//map.setLatLng();
-						//satTrack();
-					},
-					4000
-				);
-			}
-
-			function stopTracker() {
-				console.log("Stopping SatTracker at " + formatDate() + "...");
-				clearInterval(timerId);
-			}
-			
-			startTracker();
-		  </script>
-
-		  <div>
-			<button id="StopTracker" class="button" onclick="stopTracker()">Stop</button>
-		  </div>
-	</body>
+	<div>
+		<button id="StopTracker" class="button" onclick="stopTracker()">Stop</button>
+	</div>
+</body>
 </html>

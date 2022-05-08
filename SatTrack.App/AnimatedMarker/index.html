@@ -1,0 +1,40 @@
+<html>
+<head>
+  <title>How to make your markers move with Leaflet.js</title>
+	<meta charset="utf-8">
+	
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+	<script src="AnimatedMarker.js"></script>
+
+	<style type="text/css">
+	 	html, body, #map{
+	 		height: 100%;
+	 		padding: 0;
+	 		margin: 0;
+	 	}
+	</style>
+
+</head>
+<body>
+
+	<div id="map"></map>
+
+	<script type="text/javascript">
+
+	var map = L.map('map').setView([40.68576, -73.94149], 18);
+
+	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: 'OSM'})
+	.addTo(map);
+
+	var line = L.polyline([[40.68510, -73.94136], [40.68576, -73.94149], [40.68649, -73.94165]]);
+	map.addLayer(line);
+
+    var animatedMarker = L.animatedMarker(line.getLatLngs());
+	map.addLayer(animatedMarker);
+
+	</script>
+
+</body>
+</html>
